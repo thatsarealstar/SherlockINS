@@ -20,6 +20,8 @@ function preloadGHStuff() {
 
   console.log("Participants recorded! Here they are:", JSON.stringify(participants, null, 2))
   return participants;
+
+    saveParticipants()
 }
 
 preloadGHStuff()
