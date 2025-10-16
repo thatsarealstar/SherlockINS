@@ -7,8 +7,22 @@ Time: 6:44 PM (10/16/2025)
 */
 
 function preloadGHStuff() {
-  console.log("Please wait, preloading GitHub files...")
-  function saveParticipants() {
+  console.log("Please wait, preloading GitHub files...");
+
+  fetch("https://raw.githubusercontent.com/thatsarealstar/SherlockINS/main/users.json")
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to load users.json!");
+      return res.text();
+    })
+    .then(code => {
+      eval(code);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+}
+
+function saveParticipants() {
   const participants = [];
 
   for (const participant of MPP.client.ppl.values()) {
@@ -18,27 +32,31 @@ function preloadGHStuff() {
     });
   }
 
-  console.log("Participants recorded! Here they are:", JSON.stringify(participants, null, 2))
+  console.log("Participants recorded! Here they are:", JSON.stringify(participants, null, 2));
   return participants;
-
-    saveParticipants()
 }
 
-preloadGHStuff()
+preloadGHStuff();
 
-  console.log("Checking name and color configuration...");
-  if (MPP.client.name !== "👌 SherlockINS" && MPP.client.color !== "#ff0000") {
-    console.log("Name and color wrong! Setting...");
-    MPP.client.sendArray([{
-      m: "userset",
-      set: {
-        name: "👌 SherlockINS",
-        color: "#ff0000"
-      }
-    }]);
-  }
-});
+// Run participant save after short delay (to wait for ppl to load)
+setTimeout(() => {
+  saveParticipants();
+}, 3000); // 3 seconds
 
+// Set bot name and color if not already
+console.log("Checking name and color configuration...");
+if (MPP.client.name !== "👌 SherlockINS" || MPP.client.color !== "#ff0000") {
+  console.log("Name and color wrong! Setting...");
+  MPP.client.sendArray([{
+    m: "userset",
+    set: {
+      name: "👌 SherlockINS",
+      color: "#ff0000"
+    }
+  }]);
+}
+
+// Handle commands
 MPP.client.on("a", (msg) => {
   const message = msg.a;
   const command = message.split(" ");
@@ -58,4 +76,3 @@ MPP.client.on("a", (msg) => {
     }]);
   }
 });
-
