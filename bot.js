@@ -6,7 +6,24 @@ Creator: thatsarealstar (Sherlock)
 Time: 6:44 PM (10/16/2025)
 */
 
-MPP.client.on("hi", () => {
+function preloadGHStuff() {
+  console.log("Please wait, preloading GitHub files...")
+  function saveParticipants() {
+  const participants = [];
+
+  for (const participant of MPP.client.ppl.values()) {
+    participants.push({
+      name: participant.name,
+      id: participant._id
+    });
+  }
+
+  console.log("Participants recorded! Here they are:", JSON.stringify(participants, null, 2))
+  return participants;
+}
+
+preloadGHStuff()
+
   console.log("Checking name and color configuration...");
   if (MPP.client.name !== "👌 SherlockINS" && MPP.client.color !== "#ff0000") {
     console.log("Name and color wrong! Setting...");
