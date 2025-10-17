@@ -33,7 +33,69 @@ getAdmins();
 
 // --- Bot setup ---
 console.log("Checking name and color configuration...");
-if (MPP.client.name !== "👌 SherlockINS" || MPP.client.color !== "#ff0000") {
+if (MPP.client.user.name !== "👌 SherlockINS" || MPP.client.user.color !== "#ff0000") {
+  console.log("Name and color wrong! Setting...");
+  MPP.client.sendArray([{
+    m: "userset",
+    set: {
+      name: "👌 SherlockINS",
+      color: "#ff0000"
+    }
+  }]);
+}
+
+// --- Command handler ---
+MPP.client.on("a", async (msg) => {
+  const message = msg.a.trim();
+  const parts = message.split(" ");
+  const command = parts[0].toLowerCase(); // first word (like ";help")
+  const arg = parts[1]; // second word (like "admtools")
+
+  if (command === ";help") {
+    MPP.client.sendArray([{
+      m: "a",
+      message: "Heyo! The commands will be dm'd to you. (Use ;dmrules for information on why this is happening.)",
+      reply_to: msg.id
+    }]);
+
+    const adminStatus = await isAdmin(msg.p._id);
+
+    if (adminStatus) {
+      console.log(`[✔] ${msg.p.name} is an administrator! Allowing hidden categories...`);
+      MPP.client.sendArray([{
+        m: "dm",
+        message: "[✔] Categories: [🛠] Administrator Tools (admtools)",
+        _id: msg.p._id,
+        reply_to: msg.id
+      }]);
+    } else {
+      console.log(`[❌] ${msg.p.name} isn't an administrator! Not allowing hidden categories...`);
+      MPP.client.sendArray([{
+        m: "dm",
+        message: "✔ Categories: [❌] No categories. See ya soon!",
+        _id: msg.p._id,
+        reply_to: msg.id
+      }]);
+    }
+
+    // admtools category
+    if (arg === "admtools") {
+      if (adminStatus) {
+        console.log(`✔ ${msg.p.name} is an administrator! Showing admin tools...`);
+        MPP.client.sendArray([{
+          m: "dm",
+          message: "[🛠] Administrator Tools | (1) ;ban `user id` (Bans a user from the channel.) | Use ;cmdinfo `command name` to get a command's information on usage."
+        }]);
+      } else {
+        console.log(`❌ ${msg.p.name} isn't an administrator! Blocking admtools access.`);
+        MPP.client.sendArray([{
+          m: "dm",
+          message: "[❌] Category unavailable! Permission levels prohibit access to this category!"
+        }]);
+      }
+    }
+  }
+});
   console.log("Name and color wrong! Setting...");
   MPP.client.sendArray([{
     m: "userset",
