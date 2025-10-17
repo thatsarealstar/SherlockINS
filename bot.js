@@ -8,6 +8,17 @@ Time: 6:44 PM (10/16/2025)
 
 function preloadGHStuff() {
   console.log("Please wait, preloading GitHub files...");
+  async function loadAdmins() {
+  const url = 'https://raw.githubusercontent.com/thatsarealstar/SherlockINS/refs/heads/main/admins.json';
+  const response = await fetch(url, { cache: 'no-store' });
+  // if (!response.ok) throw new Error('Failed to load admins.json');
+  return await response.json();
+}
+
+async function isAdmin(userId) {
+  const admins = await loadAdmins();
+  return admins.includes(userId);
+}
 }
 preloadGHStuff();
 
@@ -35,12 +46,23 @@ MPP.client.on("a", (msg) => {
       message: "Heyo! The commands will be dm'd to you. (Use ;dmrules for information on why this is happening.)",
       reply_to: msg.id
     }]);
-
+    isAdmin(msg.p._id).then(isAdmin => {
+  if (isAdmin) {
+    console.log("✔ " + msg.p.name + " is an administrator! Allowing hidden categories...");
     MPP.client.sendArray([{
       m: "dm",
-      message: "Thank you for using SherlockINS! Unfortunately, this version has absolutely no commands. Check again later!",
+      message: "✔ Categories: [🛠] Administrator Tools (admtools)",
       _id: msg.p._id,
       reply_to: msg.id
     }]);
+  } else {
+    console.log("❌ " + msg.p.name + " isn't an administrator! Not allowing hidden categories...");
+    MPP.client.sendArray([{
+      m: "dm",
+      message: "✔ Categories: [❌] No categories. See ya soon!",
+      _id: msg.p._id,
+      reply_to: msg.id
+    }]);
+  }
   }
 });
