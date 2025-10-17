@@ -49,7 +49,7 @@ MPP.client.on("a", async (msg) => {
   const message = msg.a.trim();
   const command = message.split(" ")[0].toLowerCase();
 
-  if (command[0] === ";help") {
+  if (command === ";help") {
     MPP.client.sendArray([{
       m: "a",
       message: "Heyo! The commands will be dm'd to you. (Use ;dmrules for information on why this is happening.)",
