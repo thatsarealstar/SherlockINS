@@ -33,6 +33,7 @@ getAdmins();
 
 // --- Bot setup ---
 console.log("Checking name and color configuration...");
+MPP.client.sendArray([{m: "a", message: "SherlockINS is online!"}])
 if (MPP.client.user.name !== "👌 SherlockINS" || MPP.client.user.color !== "#ff0000") {
   console.log("Name and color wrong! Setting...");
   MPP.client.sendArray([{
