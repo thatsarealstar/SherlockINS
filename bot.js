@@ -20,7 +20,7 @@ let cachedAdmins = null;
 async function getAdmins() {
   if (cachedAdmins) return cachedAdmins;
   cachedAdmins = await loadAdmins();
-  console.log("✔ Admin list loaded:", cachedAdmins);
+  console.log("[✔] Admin list loaded:", cachedAdmins);
   return cachedAdmins;
 }
 
@@ -29,7 +29,6 @@ async function isAdmin(userId) {
   return admins.includes(userId);
 }
 
-// ✅ Preload admins early (non-blocking)
 getAdmins();
 
 // --- Bot setup ---
@@ -50,7 +49,7 @@ MPP.client.on("a", async (msg) => {
   const message = msg.a.trim();
   const command = message.split(" ")[0].toLowerCase();
 
-  if (command === ";help") {
+  if (command[0] === ";help") {
     MPP.client.sendArray([{
       m: "a",
       message: "Heyo! The commands will be dm'd to you. (Use ;dmrules for information on why this is happening.)",
@@ -60,21 +59,30 @@ MPP.client.on("a", async (msg) => {
     const adminStatus = await isAdmin(msg.p._id);
 
     if (adminStatus) {
-      console.log(`✔ ${msg.p.name} is an administrator! Allowing hidden categories...`);
+      console.log(`[✔] ${msg.p.name} is an administrator! Allowing hidden categories...`);
       MPP.client.sendArray([{
         m: "dm",
-        message: "✔ Categories: [🛠] Administrator Tools (admtools)",
+        message: "[✔] Categories: [🛠] Administrator Tools (admtools)",
         _id: msg.p._id,
         reply_to: msg.id
       }]);
     } else {
-      console.log(`❌ ${msg.p.name} isn't an administrator! Not allowing hidden categories...`);
+      console.log(`[❌] ${msg.p.name} isn't an administrator! Not allowing hidden categories...`);
       MPP.client.sendArray([{
         m: "dm",
         message: "✔ Categories: [❌] No categories. See ya soon!",
         _id: msg.p._id,
         reply_to: msg.id
       }]);
+    }
+    if (command[1] === "admtools") {
+      if (adminStatus) {
+        console.log(`✔ ${msg.p.name} is an administrator! Allowing hidden categories...`);
+        MPP.client.sendArray([{"m": "dm", message: "[🛠] Administrator Tools | (1) ;ban ``user id`` (Bans a user from the channel.) | Use ;cmdinfo ``command name`` to get a command's information on usage."}])
+      } else {
+        console.log(`❌ ${msg.p.name} isn't an administrator! Not allowing hidden categories...`);
+        MPP.client.sendArray([{"m": "dm", message: "[❌] Category unavaliable! Permission levels prohibit access to this category!"}])
+      }
     }
   }
 });
